@@ -1,7 +1,7 @@
 # Open Source MLOPs Setup for TFT Stock Predictor
 
 ## About This Project 
-This project is complete **MLOPs** set up for TFT Stock Predictor model. This project utilized powerful open source tools to operationalize data collection, processing, training, evaluation and monitorning of the model.
+This project is complete **MLOPs** set up for TFT Stock Predictor model. Complex data operations are required to continuously support ML model development. This project utilized powerful open source tools to operationalize data collection, processing, training, evaluation and monitorning of the model.
 
 ## Data Pipelines
 <img width="1043" alt="image" src="https://github.com/user-attachments/assets/1f956c83-08a9-403b-abb7-eda995681bd0" />
