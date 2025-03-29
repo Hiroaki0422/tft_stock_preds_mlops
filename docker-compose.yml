@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  stock-pipeline:
+    build: .
+    container_name: stock-pipeline
+    ports:
+      - "8080:8080"   # Airflow
+      - "5000:5000"   # MLflow
+    volumes:
+      - ./data:/app/data
+      - ./mlruns:/app/mlruns
+    command: >
+      bash -c "
+        mlflow server --backend-store-uri /app/mlruns --default-artifact-root /app/mlruns --host 0.0.0.0 --port 5000 &
+        airflow webserver --port 8080 &
+        airflow scheduler
+      "
+      
