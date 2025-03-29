@@ -5,7 +5,7 @@ This project is complete **MLOPs** set up for TFT Stock Predictor model. This pr
 
 ## Data Pipelines
 <img width="1043" alt="image" src="https://github.com/user-attachments/assets/1f956c83-08a9-403b-abb7-eda995681bd0" />
-Pipelines are scheduled by **Apache Airflow** and the DAG greatly help manage pipeline execution by visualize the dependency graph of each task 
+Pipelines are scheduled by **Airflow** and the DAG greatly help manage pipeline execution by visualize the dependency graph of each task 
 
 - data collection: Fetch Data and financial news daily
 - feature engineer: Compute sentiment scores for financial news and compute other useful features
