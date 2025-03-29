@@ -1,0 +1,13 @@
+.DS_Store
+processed
+checkpoints
+lightning_logs
+logs
+mlruns
+airflow-webserver.pid
+airflow.cfg
+airflow.db
+standalone_admin_password.txt
+webserver_config.py
+__pyache__
+*.csv

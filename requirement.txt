@@ -1,0 +1,9 @@
+apache-airflow
+yfinance
+mlflow
+pandas
+numpy
+torch
+pytorch-lightning
+pytorch-forecasting
+pytorch_optimizer
