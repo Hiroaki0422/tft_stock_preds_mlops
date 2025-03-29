@@ -1,7 +1,7 @@
 # Open Source MLOPs Setup for TFT Stock Predictor
 
 ## About This Project 
-This project is complete MLOPs set up for TFT Stock Predictor model. This project utilized powerful open source tools to operationalize data collection, processing, training, evaluation and monitorning of the model.
+This project is complete **MLOPs** set up for TFT Stock Predictor model. This project utilized powerful open source tools to operationalize data collection, processing, training, evaluation and monitorning of the model.
 
 ## 1. Data Pipelines
 <img width="1043" alt="image" src="https://github.com/user-attachments/assets/1f956c83-08a9-403b-abb7-eda995681bd0" />
@@ -23,7 +23,7 @@ The application is dockernized and therefore portable. It can be deployed Kubern
 The container application can easily be launched by docker compose up command
 
 ## 4. CICD for ML
-Github Actions(workflow) is implemented for continuous integration of ML development. Automatic tests and data validation will be performed upon push to main branch to make sure the latest release is bug-free
+**Github Actions**(workflow) is implemented for continuous integration of ML development. Automatic tests and data validation will be performed upon push to main branch to make sure the latest release is bug-free
 
 
 
