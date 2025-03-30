@@ -27,6 +27,23 @@ export default function App() {
   const inputProps = useInput();
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const handleRunCode = async (code) => {
+    try {
+      const config = {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+          "Content-Type": "application/json"
+        }
+      };
+      const response = await axios.post("http://127.0.0.1:5050/generate", {
+        query: code,
+      }, config);
+      setAiResponse(response.data.response);
+    } catch (error) {
+      setAiResponse("Error fetching response from AI.");
+    }
+  };
   // Using native DOM form submission to store state
   function submitForm(event) {
     // Prevent the default event because it causes a page refresh
