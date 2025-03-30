@@ -9,6 +9,8 @@ airflow.cfg
 airflow.db
 standalone_admin_password.txt
 webserver_config.py
-__pyache__
+**/__pyache__/
 *.csv
 *.pyc
+**/node_modules/
+**/dist/

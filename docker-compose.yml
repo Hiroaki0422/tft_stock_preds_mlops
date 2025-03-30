@@ -8,26 +8,34 @@ services:
     container_name: stock-pipeline
     ports:
       - "8080:8080" # Airflow
-      - "5000:5000" # MLflow
+      - "5050:5050" # MLflow
     volumes:
       - ./data:/app/data
       - ./mlruns:/app/mlruns
     command: >
       bash -c "
-        mlflow server --backend-store-uri /app/mlruns --default-artifact-root /app/mlruns --host 0.0.0.0 --port 5000 &
+        mlflow server --backend-store-uri /app/mlruns --default-artifact-root /app/mlruns --host 0.0.0.0 --port 5050 &
         airflow webserver --port 8080 &
         airflow scheduler
       "
 
-  grpc-backend:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: grpc-backend
+    container_name: fastapi-backend
     ports:
-      - "50051:50051"
+      - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./model:/app/model
+      - ./backend/saved_plots:/app/saved_plots
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: react-frontend
+    ports:
+      - "3000:80" # React devs expect 3000, served from Nginx on port 80
     depends_on:
-      - stock-pipeline
+      - backend

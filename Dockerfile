@@ -15,7 +15,7 @@ ENV AIRFLOW_HOME=/app/airflow
 RUN airflow db init
 
 # Expose MLflow port and Airflow port
-EXPOSE 5000 8080
+EXPOSE 5050 8080
 
 # Default command runs nothing (services started via docker-compose)
 CMD ["tail", "-f", "/dev/null"]
