@@ -25,6 +25,9 @@ The container application can easily be launched by docker compose up command
 ## CICD for ML
 **Github Actions**(workflow) is implemented for continuous integration of ML development. Automatic tests and data validation will be performed upon push to main branch to make sure the latest release is bug-free
 
+## How to run
+docker-compose up
+
 
 
 
