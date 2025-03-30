@@ -2,3 +2,4 @@ fastapi
 uvicorn
 matplotlib
 pytorch-forecasting
+email-validator

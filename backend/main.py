@@ -1,17 +1,23 @@
+import json
+from datetime import datetime
+from pytorch_forecasting.data import GroupNormalizer
+from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer
+import numpy as np
+import torch
+import os
+import pandas as pd
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
-import matplotlib.pyplot as plt
-import pandas as pd
-import os
-import numpy as np
-from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer
-from datetime import datetime
+import matplotlib
+matplotlib.use("Agg")
+
 
 app = FastAPI()
 
-SAVE_DIR = f"/data/saved_plots/{datetime.today()}"
+SAVE_DIR = f"saved_plots/{datetime.today().date()}"
 os.makedirs(SAVE_DIR, exist_ok=True)
-TRAINING_DATA_PATH = ''
+with open("config/api.json", "r") as f:
+    TRAINING_DATA_PATH = json.load(f)['train_dataset_path']
 
 FEATURES = ['Date', 'Open', 'High', 'Low', 'Close',
             'Volume', 'Dividends', 'Stock Splits', 'month', 'day', 'day_of_week',
@@ -58,8 +64,11 @@ def load_model(train_data):
         allow_missing_timesteps=True
     )
 
-    model_path = "models/tft_model-epoch=09-val_loss=2.5493.ckpt"
-    model = TemporalFusionTransformer.load_from_checkpoint(model_path)
+    model_path = "models/model_cpu.ckpt"
+    model = TemporalFusionTransformer.load_from_checkpoint(
+        model_path,
+        map_location=torch.device('cpu')
+    ).to(torch.device('cpu'))
     return model, training
 
 
@@ -67,8 +76,9 @@ MODEL, TRAINING = load_model(TRAINING_DATA)
 
 
 def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, output_size=100):
+    import matplotlib.pyplot as plt
     # Get Prediction Result
-    stock_df = training[training['symbol'] == symbol]
+    stock_df = TRAINING_DATA[TRAINING_DATA['symbol'] == symbol]
     predict_df = stock_df.tail(input_size).reset_index()
     pred_input_df = pd.concat(
         [predict_df, predict_df.tail(1)], ignore_index=True)
@@ -76,7 +86,10 @@ def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, out
     pred_dataloader = predictions.to_dataloader(
         train=False, batch_size=32)
     predictions_q = model.predict(pred_dataloader)
-    median_forecast = predictions_q[:, 1]
+    median_forecast = predictions_q[:, 0]
+    print(f"**********************************")
+    print(predictions_q)
+    print(f"**********************************")
 
     # Plotting
     pred_size = output_size
@@ -101,12 +114,15 @@ def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, out
     plt.savefig(file_path)
     plt.close()
 
-    return predictions_q[-1, 0]
+    return predictions_q[-1, 0].item()
 
 
 @app.get("/predict")
 def predict(ticker: str = Query(...)):
     # Mock prediction
+    print(f"**********************************")
+    print(ticker)
+    print(f"**********************************")
     predicted_price = make_prediction(ticker)
 
     return {"ticker": ticker, "predicted_price": predicted_price, "image_url": f"/plot/{ticker}"}
