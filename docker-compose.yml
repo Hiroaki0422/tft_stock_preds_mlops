@@ -2,11 +2,13 @@ version: "3.9"
 
 services:
   stock-pipeline:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: stock-pipeline
     ports:
-      - "8080:8080"   # Airflow
-      - "5000:5000"   # MLflow
+      - "8080:8080" # Airflow
+      - "5000:5000" # MLflow
     volumes:
       - ./data:/app/data
       - ./mlruns:/app/mlruns
@@ -16,4 +18,16 @@ services:
         airflow webserver --port 8080 &
         airflow scheduler
       "
-      
+
+  grpc-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: grpc-backend
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./backend:/app
+      - ./model:/app/model
+    depends_on:
+      - stock-pipeline

@@ -4,6 +4,9 @@ mlflow
 pandas
 numpy
 torch
+fastapi
+uvicorn
+pydantic
 pytorch-lightning
 pytorch-forecasting
 pytorch_optimizer
