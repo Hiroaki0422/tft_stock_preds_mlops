@@ -17,3 +17,5 @@ webserver_config.py
 *.png
 *.ipynb
 **/airflow/
+**/.ipynb_checkpoints/
+**/.virtual_documents/

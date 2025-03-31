@@ -43,7 +43,7 @@ def load_training_data(training_data_path=TRAINING_DATA_PATH):
     df = df[FEATURES]
     print("Training Dataset Loaded")
 
-    return df
+    return df.dropna()
 
 
 TRAINING_DATA = load_training_data()

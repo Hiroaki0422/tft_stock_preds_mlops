@@ -17,7 +17,8 @@ def process_input_data():
         for filename in filenames:
             path = os.path.join(dirname, filename)
             print(path)
-            path_ls.append(path)
+            if '202' in path:
+                path_ls.append(path)
     print(path_ls)
 
     # Sort by Date
@@ -36,9 +37,11 @@ def process_input_data():
         base_df = pd.concat([base_df, entries_to_add], ignore_index=True)
 
     base_df = base_df.rename(columns={"Symbol": "symbol"})
+    base_df = base_df[['Date', 'symbol', 'sentiment']]
+
     print(base_df.columns)
 
-    return base_df[['Date', 'symbol', 'sentiment']]
+    return base_df.dropna()
 
 
 def combine_historic_and_new_data(historic_df, new_df):
@@ -59,7 +62,7 @@ def combine_historic_and_new_data(historic_df, new_df):
 # Train an ARIMA model to predict missing values
 
 
-def impute_arima(df, column_name):
+def impute_arima(df, column_name='sentiment'):
     # Make sure your column does not have NaNs initially
     series = df[column_name]
 
@@ -73,6 +76,8 @@ def impute_arima(df, column_name):
     # Fill NaN values with predicted values
     df[column_name].fillna(
         pd.Series(predictions, index=df.index), inplace=True)
+
+    df.drop(columns=['sentiment_A', 'sentiment_B'])
 
     return df
 
@@ -94,6 +99,7 @@ def main():
     new_data = process_input_data()
     historic_data = pd.read_csv(HISTORICAL_DATA_PATH)
     training_dataset = combine_historic_and_new_data(historic_data, new_data)
+    training_dataset = impute_arima(training_dataset)
     write_output(training_dataset)
 
 
