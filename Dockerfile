@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM apache/airflow:2.10.5
 
 # Set working directory
 WORKDIR /app
@@ -11,8 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app
 
 # Set env vars for Airflow
-ENV AIRFLOW_HOME=/app/airflow
-RUN airflow db init
+ENV _AIRFLOW_WWW_USER_USERNAME=airflow
+ENV _AIRFLOW_WWW_USER_USERNAME=airflow
 
 # Expose MLflow port and Airflow port
 EXPOSE 5050 8080

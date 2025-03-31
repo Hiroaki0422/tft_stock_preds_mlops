@@ -3,6 +3,63 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 
+const Navbar = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #0f172a; /* dark blue-gray */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const Title = styled.h1`
+  font-size: 20px;
+  margin: 0;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const NavButton = styled.a`
+  background-color: #1e293b;
+  color: white;
+  padding: 8px 14px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background-color: #334155;
+  }
+`;
+
+function TopNavbar() {
+  return (
+    <Navbar>
+      <Title>📈 Stock Prediction & MLOps Manger</Title>
+      <ButtonGroup>
+        <NavButton href="http://localhost:8080" target="_blank">
+          Airflow
+        </NavButton>
+        <NavButton href="http://localhost:5050" target="_blank">
+          MLflow
+        </NavButton>
+      </ButtonGroup>
+    </Navbar>
+  );
+}
+
+
 const StyledInput = styled.input`
   display: block;
   margin: 20px 0px;
@@ -23,80 +80,88 @@ function useInput(defaultValue = "") {
 }
 
 export default function App() {
-  // Using a fancy shared React hook to control input state
   const inputProps = useInput();
-  const [userList, setUserList] = useState([]);
+  const [stockList, setStockList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const handleRunCode = async (code) => {
+
+  async function submitForm(event) {
+    event.preventDefault();
+    const ticker = event.target.myInput.value.trim().toUpperCase();
+    if (!ticker) return;
+
+    setLoading(true);
+
     try {
-      const config = {
+      const res = await axios.get(`http://localhost:8000/predict`, {
+        params: { ticker: ticker },
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
           "Content-Type": "application/json"
         }
-      };
-      const response = await axios.post("http://127.0.0.1:5050/generate", {
-        query: code,
-      }, config);
-      setAiResponse(response.data.response);
-    } catch (error) {
-      setAiResponse("Error fetching response from AI.");
+      });
+
+      const { ticker: tick, predicted_price, image_url } = res.data;
+
+      setStockList((prev) => [
+        {
+          ticker: tick,
+          predicted_price,
+          change: null, // Optional: you can compute this if you want
+          image_url,
+        },
+        ...prev,
+      ]);
+    } catch (err) {
+      console.error("Prediction error:", err);
+      alert("Failed to fetch prediction.");
     }
-  };
-  // Using native DOM form submission to store state
-  function submitForm(event) {
-    // Prevent the default event because it causes a page refresh
-    event.preventDefault();
-    const data = new FormData(event.target);
-    alert(data.get("myInput"));
+
+    setLoading(false);
   }
-  function useInput(defaultValue = "") {
-    const [value, setValue] = useState(defaultValue);
-    function onChange(e) {
-      setValue(e.target.value);
-    }
-    return {
-      value,
-      onChange,
-    };
-  }
+
   return (
     <div>
-      <h1> React Input Examples </h1>
-      <h2> Uncontrolled input </h2>
-      <p>
-        This input's state is <i> not </i> controlled by React, it relies on
-        native DOM form submissions. Submitting will parse the form values.
-      </p>
-      <form onSubmit={submitForm}>
+      <TopNavbar />
+      <form onSubmit={submitForm} style={{ paddingTop: "80px" }}>
         <label>
-          Name:
-          <StyledInput placeholder="Type in here" name="myInput" type="text" />
+          Ticker:
+          <StyledInput
+            placeholder="e.g. AAPL, TSLA"
+            name="myInput"
+            type="text"
+            {...inputProps}
+          />
         </label>
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" disabled={loading} />
       </form>
+
       <table className="table mt-3">
         <thead className="thead-dark">
           <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Avatar</th>
+            <th>Tick</th>
+            <th>Predicted Price</th>
+            <th>Change</th>
+            <th>Plot</th>
           </tr>
         </thead>
         <tbody>
-          {userList.map((x, i) => (
+          {stockList.map((x, i) => (
             <tr key={i}>
-              <td>{x.first_name}</td>
-              <td>{x.last_name}</td>
-              <td>{x.email}</td>
+              <td>{x.ticker}</td>
+              <td>{x.predicted_price.toFixed(2)}</td>
+              <td>{x.change ?? "-"}</td>
               <td>
-                <img src={x.avatar} width="50" height="50" alt={x.avatar} />
+                <img
+                  src={`http://localhost:8000${x.image_url}`}
+                  width="80"
+                  height="50"
+                  alt={`Plot for ${x.ticker}`}
+                />
               </td>
             </tr>
           ))}
-          {userList.length === 0 && (
+          {stockList.length === 0 && (
             <tr>
               <td className="text-center" colSpan="4">
                 <b>No data found to display.</b>

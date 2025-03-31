@@ -14,3 +14,4 @@ webserver_config.py
 *.pyc
 **/node_modules/
 **/dist/
+*.png

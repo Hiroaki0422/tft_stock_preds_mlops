@@ -8,11 +8,21 @@ import os
 import pandas as pd
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import matplotlib
 matplotlib.use("Agg")
 
-
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+print("✅ CORS middleware added")
+
 
 SAVE_DIR = f"saved_plots/{datetime.today().date()}"
 os.makedirs(SAVE_DIR, exist_ok=True)

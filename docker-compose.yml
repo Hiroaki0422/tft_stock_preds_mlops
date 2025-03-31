@@ -12,11 +12,14 @@ services:
     volumes:
       - ./data:/app/data
       - ./mlruns:/app/mlruns
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./src:/opt/airflow/src
     command: >
       bash -c "
         mlflow server --backend-store-uri /app/mlruns --default-artifact-root /app/mlruns --host 0.0.0.0 --port 5050 &
-        airflow webserver --port 8080 &
-        airflow scheduler
+        airflow standalone
       "
 
   backend:
@@ -29,6 +32,9 @@ services:
     volumes:
       - ./backend:/app
       - ./backend/saved_plots:/app/saved_plots
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./models:/app/models
 
   frontend:
     build:

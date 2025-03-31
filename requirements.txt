@@ -3,9 +3,10 @@ yfinance
 mlflow
 pandas
 numpy
-torch
+tor
 fastapi
 uvicorn
+transformers
 pydantic
 pytorch-lightning
 pytorch-forecasting
