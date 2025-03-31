@@ -15,3 +15,5 @@ webserver_config.py
 **/node_modules/
 **/dist/
 *.png
+*.ipynb
+**/airflow/

@@ -154,8 +154,8 @@ def feature_engineer():
     merged_dfs = []
 
     for stock in SP100_Tickers:
-        path = "/input/" + stock + ".csv"
-        path2 = "/input/" + stock + "2.csv"
+        path = "/app/data/processed/sentiment/archive/" + stock + ".csv"
+        path2 = "/app/data/processed/sentiment/archive2/" + stock + ".csv"
         try:
             # Load sentiment and stock data
             sentiments_df1 = load_sentiment_data(path)
@@ -204,13 +204,14 @@ def write_output(df):
 
     # Write DataFrame to CSV
     output_path = output_dir / \
-        f"{datetime.today().strftime('%Y-%m-%d')}_historical.csv"
+        f"/app/data/processed/{datetime.today().strftime('%Y-%m-%d')}_historical.csv"
     df.to_csv(output_path, index=False)
 
 
 def main():
     df = feature_engineer()
     write_output(df)
+    print(df.sample(3))
 
 
 if __name__ == "__main__":

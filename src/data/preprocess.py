@@ -7,32 +7,38 @@ import logging
 import sys
 from pathlib import Path
 
+HISTORICAL_DATA_PATH = f"/app/data/processed/{datetime.today().strftime('%Y-%m-%d')}_historical.csv"
+
 
 def process_input_data():
     path_ls = []
     # Combine newly fetched data
-    for dirname, _, filenames in os.walk('/data/raw'):
+    for dirname, _, filenames in os.walk('/app/data/raw/'):
         for filename in filenames:
             path = os.path.join(dirname, filename)
             print(path)
             path_ls.append(path)
+    print(path_ls)
 
     # Sort by Date
-    path_ls = path_ls[1:-1]
-    dates = [p[-14:-4] for p in path_ls]
+    dates = [p[14:24] for p in path_ls]
     dates.sort()
+    print(dates)
 
-    base_path = f"/input_path/{dates[0]}.csv"
+    base_path = f"/app/data/raw/{dates[0]}_stock_sentiments.csv"
     base_df = pd.read_csv(base_path)
 
     # Create returning dataframe
     for date in dates[1:]:
-        path = "/input_path/" + date + ".csv"
+        path = "/app/data/raw/" + date + "_stock_sentiments.csv"
         new_df = pd.read_csv(path)
         entries_to_add = new_df[new_df['Date'] > base_df['Date'].max()]
         base_df = pd.concat([base_df, entries_to_add], ignore_index=True)
 
-    return base_df
+    base_df = base_df.rename(columns={"Symbol": "symbol"})
+    print(base_df.columns)
+
+    return base_df[['Date', 'symbol', 'sentiment']]
 
 
 def combine_historic_and_new_data(historic_df, new_df):
@@ -72,14 +78,8 @@ def impute_arima(df, column_name):
 
 
 def write_output(df):
-    current_dir = Path(__file__).resolve().parent.parent.parent
-    output_dir = current_dir / 'data'
-    output_dir.mkdir(exist_ok=True)
-
-    # Write DataFrame to CSV
-    output_path = output_dir / \
-        f"{datetime.today().strftime('%Y-%m-%d')}_training.csv"
-    df.to_csv(output_path, index=False)
+    df.to_csv(
+        f"/app/data/curated/{datetime.today().strftime('%Y-%m-%d')}_training.csv", index=False)
 
 
 def parse_args():
@@ -92,7 +92,7 @@ def parse_args():
 def main():
     args = parse_args()
     new_data = process_input_data()
-    historic_data = pd.read_csv(args.data)
+    historic_data = pd.read_csv(HISTORICAL_DATA_PATH)
     training_dataset = combine_historic_and_new_data(historic_data, new_data)
     write_output(training_dataset)
 

@@ -78,7 +78,7 @@ def write_output(df):
 
     # Write DataFrame to CSV
     output_path = output_dir / \
-        f"{datetime.today().strftime('%Y-%m-%d')}_stock&sentiments.csv"
+        f"/app/data/raw/{datetime.today().strftime('%Y-%m-%d')}_stock_sentiments.csv"
     df.to_csv(output_path, index=False)
 
 

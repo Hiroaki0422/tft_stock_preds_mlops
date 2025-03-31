@@ -12,7 +12,7 @@ def data_validation():
 with DAG(
     dag_id="stock_data_pipeline_process_input",
     start_date=datetime(2025, 3, 28),
-    schedule_interval="@weekly",  # or None for manual runs
+    schedule_interval="0 15 * * 1-5",
     catchup=False,
     tags=["stocks_sentiment"],
 ) as dag:
@@ -24,7 +24,7 @@ with DAG(
 
     feature_engineer = BashOperator(
         task_id="feature_engineer",
-        bash_command="python /opt/airflow/src/data/indicators&features.py"
+        bash_command="python /opt/airflow/src/features/indicators_features.py"
     )
 
     create_training = BashOperator(

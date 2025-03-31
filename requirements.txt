@@ -8,6 +8,7 @@ fastapi
 uvicorn
 transformers
 pydantic
+statsmodels
 pytorch-lightning
 pytorch-forecasting
 pytorch_optimizer

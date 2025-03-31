@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from pytorch_forecasting.data import GroupNormalizer
 from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer
@@ -26,8 +25,8 @@ print("✅ CORS middleware added")
 
 SAVE_DIR = f"saved_plots/{datetime.today().date()}"
 os.makedirs(SAVE_DIR, exist_ok=True)
-with open("config/api.json", "r") as f:
-    TRAINING_DATA_PATH = json.load(f)['train_dataset_path']
+
+TRAINING_DATA_PATH = f"/app/data/curated/{datetime.today().strftime('%Y-%m-%d')}_training.csv"
 
 FEATURES = ['Date', 'Open', 'High', 'Low', 'Close',
             'Volume', 'Dividends', 'Stock Splits', 'month', 'day', 'day_of_week',
