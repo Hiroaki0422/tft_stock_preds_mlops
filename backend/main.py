@@ -84,11 +84,30 @@ def load_model(train_data):
 MODEL, TRAINING = load_model(TRAINING_DATA)
 
 
+def get_recent_price_percent_changes(df):
+
+    close = df['Close']
+    latest = close.iloc[-1]
+
+    change_1d = ((latest - close.iloc[-2]) /
+                 close.iloc[-2]) if len(close) >= 2 else None
+    change_3d = ((latest - close.iloc[-4]) /
+                 close.iloc[-4]) if len(close) >= 4 else None
+    change_5d = ((latest - close.iloc[-6]) /
+                 close.iloc[-6]) if len(close) >= 6 else None
+    print((change_1d, change_3d, change_5d))
+    print(close.iloc[-10:-1])
+
+    return (change_1d, change_3d, change_5d)
+
+
 def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, output_size=100):
     import matplotlib.pyplot as plt
     # Get Prediction Result
     stock_df = TRAINING_DATA[TRAINING_DATA['symbol'] == symbol]
     predict_df = stock_df.tail(input_size).reset_index()
+    one_diff, three_diff, five_diff = get_recent_price_percent_changes(
+        predict_df)
     pred_input_df = pd.concat(
         [predict_df, predict_df.tail(1)], ignore_index=True)
     predictions = TimeSeriesDataSet.from_dataset(training, pred_input_df)
@@ -99,6 +118,11 @@ def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, out
     print(f"**********************************")
     print(predictions_q)
     print(f"**********************************")
+
+    predicted = predictions_q[-1, 0].item()
+    latest = predict_df['Close'].iloc[-1]
+    change = (predicted - latest) / latest
+    print(f"predicted: {predicted}, latest: {latest}")
 
     # Plotting
     pred_size = output_size
@@ -123,7 +147,7 @@ def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, out
     plt.savefig(file_path)
     plt.close()
 
-    return predictions_q[-1, 0].item()
+    return predicted, change*100, one_diff*100, three_diff*100, five_diff*100
 
 
 @app.get("/predict")
@@ -132,9 +156,10 @@ def predict(ticker: str = Query(...)):
     print(f"**********************************")
     print(ticker)
     print(f"**********************************")
-    predicted_price = make_prediction(ticker)
+    predicted_price, change,  one_diff, three_diff, five_diff = make_prediction(
+        ticker)
 
-    return {"ticker": ticker, "predicted_price": predicted_price, "image_url": f"/plot/{ticker}"}
+    return {"ticker": ticker, "change": change, "predicted_price": predicted_price, "one_diff": one_diff, "three_diff": three_diff, "five_diff": five_diff, "image_url": f"/plot/{ticker}"}
 
 
 @app.get("/plot/{ticker}")

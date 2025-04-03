@@ -8,7 +8,7 @@ services:
     container_name: stock-pipeline
     ports:
       - "8080:8080" # Airflow
-      - "5050:5050" # MLflow
+      - "5050:5050" # MLflowdo
     volumes:
       - ./data:/app/data
       - ./mlruns:/app/mlruns
@@ -16,6 +16,7 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./src:/opt/airflow/src
+      - ./airflow:/root/airflow
     command: >
       bash -c "
         mlflow server --backend-store-uri /app/mlruns --default-artifact-root /app/mlruns --host 0.0.0.0 --port 5050 &

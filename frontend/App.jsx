@@ -101,13 +101,16 @@ export default function App() {
         }
       });
 
-      const { ticker: tick, predicted_price, image_url } = res.data;
+      const { ticker: tick, predicted_price, one_diff, three_diff, five_diff, change, image_url } = res.data;
 
       setStockList((prev) => [
         {
           ticker: tick,
           predicted_price,
-          change: null, // Optional: you can compute this if you want
+          one_diff,
+          three_diff,
+          five_diff,
+          change,
           image_url,
         },
         ...prev,
@@ -121,27 +124,44 @@ export default function App() {
   }
 
   return (
-    <div>
+    <div className="container">
       <TopNavbar />
-      <form onSubmit={submitForm} style={{ paddingTop: "80px" }}>
-        <label>
-          Ticker:
-          <StyledInput
-            placeholder="e.g. AAPL, TSLA"
-            name="myInput"
-            type="text"
-            {...inputProps}
-          />
-        </label>
-        <input type="submit" value="Submit" disabled={loading} />
-      </form>
+      <div
+        style={{ paddingTop: "80px", display: "flex", flexDirection: "row" }}
+      >
+        <form onSubmit={submitForm}>
+          <label>
+            Ticker:
+            <StyledInput
+              placeholder="e.g. AAPL, TSLA"
+              name="myInput"
+              type="text"
+              {...inputProps}
+            />
+          </label>
+          <input type="submit" value="Submit" disabled={loading} />
+        </form>
+        <div style={{ marginLeft: "40px" }}>
+          {stockList.length > 0 && (
+            <img
+              src={`http://localhost:8000${stockList[0].image_url}`}
+              alt={`Plot for ${stockList[0].ticker}`}
+              width="500"
+              height="400"
+            />
+          )}
+        </div>
+      </div>
 
       <table className="table mt-3">
         <thead className="thead-dark">
           <tr>
             <th>Tick</th>
             <th>Predicted Price</th>
-            <th>Change</th>
+            <th>Predicted Change</th>
+            <th>Change from Last Day</th>
+            <th>Change from 3 Days</th>
+            <th>Change from 5 Days</th>
             <th>Plot</th>
           </tr>
         </thead>
@@ -150,12 +170,15 @@ export default function App() {
             <tr key={i}>
               <td>{x.ticker}</td>
               <td>{x.predicted_price.toFixed(2)}</td>
-              <td>{x.change ?? "-"}</td>
+              <td>{x.change?.toFixed(2) ?? "N/A"}%</td>
+              <td>{x.one_diff?.toFixed(2) ?? "N/A"}%</td>
+              <td>{x.three_diff?.toFixed(2) ?? "N/A"}%</td>
+              <td>{x.five_diff?.toFixed(2) ?? "N/A"}%</td>
               <td>
                 <img
                   src={`http://localhost:8000${x.image_url}`}
-                  width="80"
-                  height="50"
+                  width="180"
+                  height="150"
                   alt={`Plot for ${x.ticker}`}
                 />
               </td>
