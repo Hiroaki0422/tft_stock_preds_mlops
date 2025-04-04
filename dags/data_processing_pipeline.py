@@ -11,7 +11,7 @@ def data_validation():
 
 with DAG(
     dag_id="stock_data_pipeline_process_input",
-    start_date=datetime(2025, 4, 1),
+    start_date=datetime(2025, 4, 3),
     schedule_interval="0 15 * * 1-5",
     catchup=False,
     tags=["stocks_sentiment"],

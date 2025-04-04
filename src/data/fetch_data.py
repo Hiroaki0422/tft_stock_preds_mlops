@@ -40,7 +40,7 @@ def get_sentiment(text):
 def get_stock_and_sentiment():
     # Collect Stock Data & Related News
     stock_sent_dfs = []
-    for symbol in SP100_TICKERS[0:5]:
+    for symbol in SP100_TICKERS:
         print(symbol)
         dat = yf.Ticker(symbol)
         news = dat.get_news()
