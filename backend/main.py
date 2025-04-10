@@ -115,12 +115,10 @@ def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, out
         train=False, batch_size=32)
     predictions_q = model.predict(pred_dataloader)
     median_forecast = predictions_q[:, 0]
-    print(f"**********************************")
-    print(predictions_q)
-    print(f"**********************************")
 
     predicted = predictions_q[-1, 0].item()
     latest = predict_df['Close'].iloc[-1]
+    sentiment = predict_df['sentiment'].iloc[-1]
     change = (predicted - latest) / latest
     print(f"predicted: {predicted}, latest: {latest}")
 
@@ -147,7 +145,7 @@ def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, out
     plt.savefig(file_path)
     plt.close()
 
-    return predicted, change*100, one_diff*100, three_diff*100, five_diff*100
+    return predicted, change*100, one_diff*100, three_diff*100, five_diff*100, sentiment
 
 
 @app.get("/predict")
@@ -157,9 +155,9 @@ def predict(ticker: str = Query(...)):
     print(ticker)
     print(f"**********************************")
     predicted_price, change,  one_diff, three_diff, five_diff = make_prediction(
-        ticker)
+        ticker, sentiment)
 
-    return {"ticker": ticker, "change": change, "predicted_price": predicted_price, "one_diff": one_diff, "three_diff": three_diff, "five_diff": five_diff, "image_url": f"/plot/{ticker}"}
+    return {"ticker": ticker, "change": change, "predicted_price": predicted_price, "one_diff": one_diff, "three_diff": three_diff, "five_diff": five_diff, "image_url": f"/plot/{ticker}", "sentiment": sentiment}
 
 
 @app.get("/plot/{ticker}")
