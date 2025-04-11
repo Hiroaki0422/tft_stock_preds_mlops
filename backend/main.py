@@ -154,8 +154,10 @@ def predict(ticker: str = Query(...)):
     print(f"**********************************")
     print(ticker)
     print(f"**********************************")
-    predicted_price, change,  one_diff, three_diff, five_diff = make_prediction(
-        ticker, sentiment)
+    predicted_price, change,  one_diff, three_diff, five_diff, sentiment = make_prediction(
+        ticker)
+    print("-------------------sentiment score---------------------")
+    print(f"sentiment {sentiment}")
 
     return {"ticker": ticker, "change": change, "predicted_price": predicted_price, "one_diff": one_diff, "three_diff": three_diff, "five_diff": five_diff, "image_url": f"/plot/{ticker}", "sentiment": sentiment}
 

@@ -46,7 +46,7 @@ const NavButton = styled.a`
 function TopNavbar() {
   return (
     <Navbar>
-      <Title>📈 Stock Prediction & MLOps Manger</Title>
+      <Title>📈 Stock Prediction & MLOps Mangement</Title>
       <ButtonGroup>
         <NavButton href="http://localhost:8080" target="_blank">
           Airflow
@@ -101,7 +101,7 @@ export default function App() {
         }
       });
 
-      const { ticker: tick, predicted_price, one_diff, three_diff, five_diff, change, image_url } = res.data;
+      const { ticker: tick, predicted_price, one_diff, three_diff, five_diff, change, image_url, sentiment } = res.data;
 
       setStockList((prev) => [
         {
@@ -112,6 +112,7 @@ export default function App() {
           five_diff,
           change,
           image_url,
+          sentiment,
         },
         ...prev,
       ]);
