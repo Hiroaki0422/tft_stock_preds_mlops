@@ -51,7 +51,7 @@ TRAINING_DATA = load_training_data()
 
 def load_model(train_data):
     # Convert to PyTorch Forecasting Dataset
-    # 1. Define the training dataset
+    #  Define the training dataset
     max_prediction_length = 1
     max_encoder_length = 10
 
@@ -150,13 +150,8 @@ def make_prediction(symbol, model=MODEL, training=TRAINING, input_size=2000, out
 
 @app.get("/predict")
 def predict(ticker: str = Query(...)):
-    # Mock prediction
-    print(f"**********************************")
-    print(ticker)
-    print(f"**********************************")
     predicted_price, change,  one_diff, three_diff, five_diff, sentiment = make_prediction(
         ticker)
-    print("-------------------sentiment score---------------------")
     print(f"sentiment {sentiment}")
 
     return {"ticker": ticker, "change": change, "predicted_price": predicted_price, "one_diff": one_diff, "three_diff": three_diff, "five_diff": five_diff, "image_url": f"/plot/{ticker}", "sentiment": sentiment}
